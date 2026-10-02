@@ -1,0 +1,7 @@
+# local-only material (not published)
+OD/
+webpage_assets/
+__pycache__/
+*.asv
+Thumbs.db
+desktop.ini

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HEAR: Learning to Assess Heartbeat Observability</title>
+  <meta name="description" content="HEAR — Learning to Assess Heartbeat Observability for mmWave Heart-Rate Sensing. Simulation-trained observability assessment with zero-shot transfer to real radar.">
+  <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+
+<!-- ============================== HERO ============================== -->
+<header class="hero">
+  <div class="container">
+    <h1>Learning to Assess <span class="name">Heartbeat Observability</span><br>
+        for mmWave Heart-Rate Sensing</h1>
+
+    <p class="authors">
+      <span class="nowrap"><a href="https://yuxuanhu9.github.io/" target="_blank">Yuxuan Hu</a><sup>1,2</sup></span> &nbsp;·&nbsp;
+      <span class="nowrap"><a href="https://shanshilin.github.io/" target="_blank">Shilin Shan</a><sup>1</sup></span> &nbsp;·&nbsp;
+      <span class="nowrap"><a href="https://scholar.google.com/citations?user=V25k08UAAAAJ&amp;hl=en" target="_blank">Jianfei Yang</a><sup>1,&#9993;</sup></span> &nbsp;·&nbsp;
+      <span class="nowrap"><a href="https://scholar.google.com/citations?user=i-N1K9oAAAAJ&amp;hl=en" target="_blank">Feng Xu</a><sup>2,&#9993;</sup></span>
+    </p>
+    <p class="affil"><span class="nowrap"><sup>1</sup>Nanyang Technological University</span> &nbsp;&nbsp; <span class="nowrap"><sup>2</sup>Fudan University</span> &nbsp;&nbsp; <span class="nowrap">&#9993; Corresponding authors</span></p>
+
+    <div class="btn-row">
+      <a class="btn disabled" href="#">Paper (coming&nbsp;soon)</a>
+      <a class="btn disabled" href="#">arXiv (coming&nbsp;soon)</a>
+      <a class="btn disabled" href="#">Code (coming&nbsp;soon)</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============================== TEASER ============================== -->
+<section class="teaser-section">
+  <div class="container">
+    <figure class="teaser">
+      <img src="static/images/teaser.png" alt="HEAR teaser">
+      <figcaption>
+        <b>(a)</b> Simulated observations with similar motion projections can exhibit markedly different
+        heartbeat observability — geometry alone cannot determine whether the heartbeat component is readable.
+        <b>(b)</b> Trained solely on simulated observations, HEAR is applied to real recordings without adaptation
+        and jointly predicts an observability score and heart rate from the phase spectrum of each 25&nbsp;s window.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ====================== CHEST-WALL MOTION VIDEOS ====================== -->
+<section class="band">
+  <div class="container">
+    <h2>Chest-Wall Motion Across Postures</h2>
+    <p class="lead center">
+      Simulated chest-wall motion on <a class="ds-link" href="https://smpl.is.tue.mpg.de/" target="_blank">SMPL</a> body meshes posed with <a class="ds-link" href="http://mocap.cs.cmu.edu/" target="_blank">CMU MoCap</a> motion-capture data via <a class="ds-link" href="https://amass.is.tue.mpg.de/" target="_blank">AMASS</a>.
+      Heartbeat displacement is magnified for visibility;
+      respiration and heartbeat are driven by waveforms extracted from real radar recordings.
+    </p>
+    <div class="pair-list">
+      <div class="video-slot pair-slot">
+        <div class="zoom-pair">
+          <video controls muted loop playsinline poster="static/images/poster_standing.png">
+            <source src="static/videos/motion_standing.mp4" type="video/mp4">
+          </video>
+          <svg class="zoom-arrow" viewBox="0 0 40 80" aria-hidden="true"><polygon points="2,2 20,2 38,40 20,78 2,78 20,40"/></svg>
+          <video controls muted loop playsinline poster="static/images/poster_zoom_standing.png">
+            <source src="static/videos/zoom_standing.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="vtitle">Standing</div>
+        <div class="vdesc">Left: respiration + heartbeat synthesis on a standing posture. Right: close-up of the chest-wall scatterers under the same motion.</div>
+      </div>
+      <div class="video-slot pair-slot">
+        <div class="zoom-pair">
+          <video controls muted loop playsinline poster="static/images/poster_sitting.png">
+            <source src="static/videos/motion_sitting.mp4" type="video/mp4">
+          </video>
+          <svg class="zoom-arrow" viewBox="0 0 40 80" aria-hidden="true"><polygon points="2,2 20,2 38,40 20,78 2,78 20,40"/></svg>
+          <video controls muted loop playsinline poster="static/images/poster_zoom_sitting.png">
+            <source src="static/videos/zoom_sitting.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="vtitle">Sitting</div>
+        <div class="vdesc">Left: respiration + heartbeat synthesis on a sitting posture. Right: close-up of the chest-wall scatterers under the same motion.</div>
+      </div>
+      <div class="video-slot pair-slot">
+        <div class="zoom-pair">
+          <video controls muted loop playsinline poster="static/images/poster_lying.png">
+            <source src="static/videos/motion_lying.mp4" type="video/mp4">
+          </video>
+          <svg class="zoom-arrow" viewBox="0 0 40 80" aria-hidden="true"><polygon points="2,2 20,2 38,40 20,78 2,78 20,40"/></svg>
+          <video controls muted loop playsinline poster="static/images/poster_zoom_lying.png">
+            <source src="static/videos/zoom_lying.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="vtitle">Lying</div>
+        <div class="vdesc">Left: respiration + heartbeat synthesis on a lying posture. Right: close-up of the chest-wall scatterers under the same motion.</div>
+      </div>
+    </div>
+
+    <h3 class="subhead">Four body types, same drive</h3>
+    <p class="lead center">
+      Male/female &times; normal/fat body models in the same standing posture, animated by the same
+      respiratory and heartbeat waveforms and shown at a common scale. Each is paired with its chest close-up.
+    </p>
+    <div class="pair-grid2">
+      <div class="video-slot pair-slot">
+        <div class="zoom-pair portrait">
+          <video controls muted loop playsinline poster="static/images/poster_body_male_normal.png">
+            <source src="static/videos/body_male_normal.mp4" type="video/mp4">
+          </video>
+          <svg class="zoom-arrow" viewBox="0 0 40 80" aria-hidden="true"><polygon points="2,2 20,2 38,40 20,78 2,78 20,40"/></svg>
+          <video controls muted loop playsinline poster="static/images/poster_zoom_male_normal.png">
+            <source src="static/videos/zoom_male_normal.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="vtitle">Male, normal</div>
+      </div>
+      <div class="video-slot pair-slot">
+        <div class="zoom-pair portrait">
+          <video controls muted loop playsinline poster="static/images/poster_body_male_fat.png">
+            <source src="static/videos/body_male_fat.mp4" type="video/mp4">
+          </video>
+          <svg class="zoom-arrow" viewBox="0 0 40 80" aria-hidden="true"><polygon points="2,2 20,2 38,40 20,78 2,78 20,40"/></svg>
+          <video controls muted loop playsinline poster="static/images/poster_zoom_male_fat.png">
+            <source src="static/videos/zoom_male_fat.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="vtitle">Male, fat</div>
+      </div>
+      <div class="video-slot pair-slot">
+        <div class="zoom-pair portrait">
+          <video controls muted loop playsinline poster="static/images/poster_body_female_normal.png">
+            <source src="static/videos/body_female_normal.mp4" type="video/mp4">
+          </video>
+          <svg class="zoom-arrow" viewBox="0 0 40 80" aria-hidden="true"><polygon points="2,2 20,2 38,40 20,78 2,78 20,40"/></svg>
+          <video controls muted loop playsinline poster="static/images/poster_zoom_female_normal.png">
+            <source src="static/videos/zoom_female_normal.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="vtitle">Female, normal</div>
+      </div>
+      <div class="video-slot pair-slot">
+        <div class="zoom-pair portrait">
+          <video controls muted loop playsinline poster="static/images/poster_body_female_fat.png">
+            <source src="static/videos/body_female_fat.mp4" type="video/mp4">
+          </video>
+          <svg class="zoom-arrow" viewBox="0 0 40 80" aria-hidden="true"><polygon points="2,2 20,2 38,40 20,78 2,78 20,40"/></svg>
+          <video controls muted loop playsinline poster="static/images/poster_zoom_female_fat.png">
+            <source src="static/videos/zoom_female_fat.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="vtitle">Female, fat</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== DEMO ============================== -->
+<section>
+  <div class="container">
+    <h2>HEAR in Action</h2>
+    <p class="lead center">
+      Trained only in simulation, HEAR runs zero-shot on real 60&nbsp;GHz radar recordings. For each
+      25&nbsp;s window it predicts an observability score and a heart rate; windows with
+      g&nbsp;&ge;&nbsp;0.7 report their estimate (green), and low-score windows abstain (red).
+    </p>
+    <div class="video-slot feature">
+      <video controls muted playsinline poster="static/images/poster_demo.png">
+        <source src="static/videos/selective_estimation.mp4" type="video/mp4">
+      </video>
+      <div class="vtitle">Zero-shot selective estimation on Parralejo recordings</div>
+      <div class="vdesc">A resting record where every window is reported, followed by a post-exercise
+        record where HEAR abstains on windows without a readable heartbeat peak.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== ABSTRACT ============================== -->
+<section class="band">
+  <div class="container narrow abstract">
+    <h2>Abstract</h2>
+    <p>
+      Contactless heart-rate sensing with millimeter-wave (mmWave) radar requires assessing whether individual
+      measurements support reliable estimation. We study learning to assess heartbeat observability, defined as
+      the readability of the heartbeat component in an acquired phase spectrum, for selective heart-rate
+      estimation. Coherent superposition of scatterer returns can suppress this component even under similar
+      macroscopic observation geometry, motivating assessment directly from acquired measurements. To obtain
+      training supervision across different observability conditions, we develop a controllable multi-scatterer
+      frequency-modulated continuous-wave (FMCW) simulator. Agreement between the dominant heartbeat-band peak
+      and the known heart rate provides an automatic observability label for each simulated measurement. We
+      propose HEAR (Heartbeat Estimation with Assessed Reliability), a compact dual-task Transformer that jointly
+      predicts an observability score and heart rate. Trained solely on simulated observations, HEAR transfers
+      zero-shot to two public real-world datasets collected at 60 and 120&nbsp;GHz from 134 subjects. On the
+      120&nbsp;GHz dataset, score-based selection reduces the HR head's mean absolute error from 17.9&nbsp;BPM at
+      full coverage to 1.6&nbsp;BPM at 50% coverage. The complete pipeline achieves an end-to-end processing
+      latency of 50.8&nbsp;ms on an edge device.
+    </p>
+  </div>
+</section>
+
+<!-- ================= WHY GEOMETRY IS NOT ENOUGH ================= -->
+<section>
+  <div class="container">
+    <h2>Why Geometry Alone Is Not Enough</h2>
+    <p class="lead">
+      Echoes from many chest-wall scatterers superpose coherently within one range bin. Sub-wavelength
+      differences in scatterer ranges set their relative phases, which can preserve or suppress the heartbeat
+      component even when the macroscopic motion projection is identical. Controlled simulation isolates this
+      effect — something physical experiments cannot do, because the same physiological motion cannot be
+      replayed across hundreds of precisely controlled positions.
+    </p>
+    <div class="panel-row grid2">
+      <figure class="panel">
+        <img src="static/images/p_a_roc.png" alt="ROC: geometric prior vs learned gate">
+        <figcaption><b>Geometry is a weak prior.</b> The motion-projection score Q<sub>k</sub> separates
+          readable from unreadable observations with AUC&nbsp;0.635, while the learned gate reaches
+          AUC&nbsp;0.868 on the same data.</figcaption>
+      </figure>
+      <figure class="panel">
+        <img src="static/images/p_b_phase.png" alt="Phase-only perturbation experiment">
+        <figcaption><b>Phases decide readability.</b> With geometry and heart rate fixed, resampling only the
+          sub-wavelength scatterer phases flips HR correctness: 85% in the above-median gate group vs. 23%
+          below the median.</figcaption>
+      </figure>
+      <figure class="panel">
+        <img src="static/images/p_c_surface.png" alt="Body-surface map of simulated band quality">
+        <figcaption><b>Quality is spatially irregular.</b> Truth-guided band quality over 492 candidate
+          observation points on the chest surface: high- and low-quality points interleave at neighboring
+          positions rather than forming smooth geometric regions.</figcaption>
+      </figure>
+      <figure class="panel">
+        <img src="static/images/p_d_hpq.png" alt="HPQ vs simulated quality scatter">
+        <figcaption><b>No geometric shortcut.</b> Across 492 body-surface candidates, the geometric prior is
+          nearly uncorrelated with truth-guided band quality (r&nbsp;&approx;&nbsp;&minus;0.03).</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== SIMULATOR ============================== -->
+<section class="band">
+  <div class="container">
+    <h2>Multi-Scatterer FMCW Simulator</h2>
+    <figure>
+      <img src="static/images/simulation.png" alt="Simulation signal generation pipeline">
+      <figcaption>
+        Paired observations under identical respiratory and heartbeat motion: <a class="ds-link" href="https://smpl.is.tue.mpg.de/" target="_blank">SMPL</a> body meshes, posed
+        with <a class="ds-link" href="http://mocap.cs.cmu.edu/" target="_blank">CMU MoCap</a> data via <a class="ds-link" href="https://amass.is.tue.mpg.de/" target="_blank">AMASS</a>, provide scatterer positions and normals; real-derived drive waveforms animate the chest wall; the full FMCW
+        chain (per-scatterer mixing, coherent summation, noise, range FFT, phase processing) produces the
+        phase spectra used for analysis and training.
+      </figcaption>
+    </figure>
+    <div class="cards">
+      <div class="card"><div class="num">48</div><div class="lbl">body models<br>12 postures × 4 body types</div></div>
+      <div class="card"><div class="num">2,240</div><div class="lbl">drive waveforms from self-collected
+        recordings, frequency-shifted over 0.8–3.0 Hz</div></div>
+      <div class="card"><div class="num">~600 → 10%</div><div class="lbl">candidate radar positions per body,
+        screened by projection quality</div></div>
+      <div class="card"><div class="num">107,520</div><div class="lbl">simulated observation instances
+        with automatic observability labels</div></div>
+    </div>
+
+    <h3 class="subhead">Simulated observations and automatic labels</h3>
+    <p class="lead center">
+      One body and one physiological drive, observed from 630 candidate points on the chest. Each
+      observation is labeled automatically by comparing its dominant heartbeat-band peak with the
+      known heart rate.
+    </p>
+    <figure class="result-fig">
+      <a href="static/images/sample_pairs.png" target="_blank" title="Open full-size figure"><img src="static/images/sample_pairs.png" alt="Simulated observation samples with automatic labels"></a>
+      <figcaption>
+        Left: all 630 observation points, colored by the automatic label y<sub>gate</sub>; readable
+        (green) and unreadable (red) points interleave across the chest. Right: three adjacent pairs
+        (less than 4&nbsp;cm apart) with nearly identical geometric quality Q<sub>k</sub>. For each point we
+        show the phase signal (blue) with its 0.8&ndash;2&nbsp;Hz heartbeat-band component below it, and the
+        corresponding spectrum. In each pair, one spectrum keeps its dominant heartbeat-band peak (&#9660;) at
+        the true heart rate (dashed line), while the other's dominant peak moves away from it.
+      </figcaption>
+    </figure>
+
+    <h3 class="subhead">Scanning the observation point across the chest</h3>
+    <div class="video-slot feature">
+      <video controls muted playsinline poster="static/images/poster_scan.png">
+        <source src="static/videos/scan_points.mp4" type="video/mp4">
+      </video>
+      <div class="vtitle">Same motion, different observation points</div>
+      <div class="vdesc">
+        The observation point moves along three rows at heart level, about 2&nbsp;cm per step, under
+        the same body and physiological drive. Each scanned point is colored by its automatic label
+        y<sub>gate</sub>. The strip below the map compares the geometric quality Q<sub>k</sub> (line) with
+        y<sub>gate</sub> (bars) along the path: Q<sub>k</sub> changes gradually, while the heartbeat peak
+        switches between readable and lost from one point to the next.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== NETWORK ============================== -->
+<section>
+  <div class="container">
+    <h2>HEAR: A 5,295-Parameter Dual-Task Transformer</h2>
+    <figure>
+      <img src="static/images/network.png" alt="HEAR network architecture">
+      <figcaption>
+        Each candidate heartbeat bin becomes a 2-D token [X(b),&nbsp;f(b)/f<sub>b</sub>] — normalized spectral
+        magnitude plus the frequency ratio to the respiration fundamental, which encodes proximity to
+        respiratory harmonics. A 2-layer Transformer (4 heads, d&nbsp;=&nbsp;16) is mean-pooled into a shared
+        representation; two heads jointly predict the observability score g and the HR distribution.
+        The observability label y<sub>gate</sub>&nbsp;=&nbsp;exp(&minus;|b<sub>peak</sub>&minus;b<sub>true</sub>|/&tau;)
+        follows the task-performance view of sample quality: it measures whether a peak-based estimator can
+        read the heartbeat frequency from the spectrum.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============================== RESULTS ============================== -->
+<section class="band">
+  <div class="container">
+    <h2>Zero-Shot Results on Real Radar</h2>
+    <p class="lead">
+      HEAR is trained purely in simulation and evaluated zero-shot on two public datasets:
+      <b>Parralejo</b> (60&nbsp;GHz FMCW, 110 subjects, lying/sitting &times; rest/post-exercise, 1,408 windows)
+      <span class="nowrap"><a class="ds-link" href="https://zenodo.org/records/16760684" target="_blank">Dataset</a>
+      <a class="ds-link" href="https://doi.org/10.1038/s41597-026-07172-9" target="_blank">Paper</a></span> and
+      <b>VitalSense</b> (120&nbsp;GHz, 24 subjects, rest/breath-hold, 480 windows)
+      <span class="nowrap"><a class="ds-link" href="https://doi.org/10.21227/wq68-sv85" target="_blank">Dataset</a>
+      <a class="ds-link" href="https://doi.org/10.1038/s41597-026-07016-6" target="_blank">Paper</a></span>. No window from either dataset
+      is used for training, validation, model selection, or threshold tuning.
+    </p>
+
+    <figure class="result-fig small">
+      <a href="static/images/hr_dist.png" target="_blank" title="Open full-size figure"><img src="static/images/hr_dist.png" alt="HR distributions of the two datasets"></a>
+      <figcaption>
+        Ground-truth HR distributions of the evaluation windows: Parralejo includes a post-exercise tail
+        up to 144&nbsp;BPM, whereas VitalSense stays at or below 83&nbsp;BPM.
+      </figcaption>
+    </figure>
+
+    <h3 class="subhead">Observability discrimination (gate AUC)</h3>
+    <div class="table-wrap"><table class="results">
+      <thead><tr><th></th><th>Simulation</th><th>Parralejo 60&nbsp;GHz</th><th>VitalSense 120&nbsp;GHz</th></tr></thead>
+      <tbody>
+        <tr><td>Geometric prior Q<sub>k</sub></td><td>0.635</td><td>—</td><td>—</td></tr>
+        <tr class="hl"><td><b>HEAR gate (zero-shot)</b></td><td><b>0.868</b></td><td><b>0.856</b></td><td><b>0.941</b></td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 class="subhead">Selective heart-rate estimation (MAE, HR head)</h3>
+    <div class="table-wrap"><table class="results">
+      <thead><tr><th></th><th>Full coverage</th><th>At 50% coverage</th></tr></thead>
+      <tbody>
+        <tr><td>Parralejo 60&nbsp;GHz</td><td>31.0 BPM</td><td><b>19.8 BPM</b></td></tr>
+        <tr class="hl"><td>VitalSense 120&nbsp;GHz</td><td>17.9 BPM</td><td><b>1.6 BPM</b></td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 class="subhead">One score, many estimators</h3>
+    <p class="lead">
+      The same gate (threshold g&nbsp;&ge;&nbsp;0.7) improves the accuracy of five downstream estimators it was
+      never trained with. For the plain FFT peak, Acc@5&nbsp;BPM rises from 29.8% to 86.7% in simulation,
+      from 32.0% to 65.8% on Parralejo, and from 81.7% to 94.1% on VitalSense; weighted FFT, autocorrelation,
+      harmonic product spectrum, and VMD estimators improve consistently as well.
+    </p>
+
+    <h3 class="subhead">Risk–coverage analysis</h3>
+    <figure class="result-fig">
+      <a href="static/images/select4.png" target="_blank" title="Open full-size figure"><img src="static/images/select4.png" alt="Risk-coverage curves"></a>
+      <figcaption>
+        Lowering coverage by raising the score threshold monotonically reduces the error of accepted
+        windows on both real datasets, approaching the oracle ordering.
+      </figcaption>
+    </figure>
+
+    <h3 class="subhead">Sim-to-real alignment</h3>
+    <figure class="result-fig mid">
+      <a href="static/images/tsne_dual.png" target="_blank" title="Open full-size figure"><img src="static/images/tsne_dual.png" alt="t-SNE of learned representations"></a>
+      <figcaption>
+        t-SNE of HEAR's pooled representations: simulated and real observations overlap for
+        (a) Parralejo postures and (b) VitalSense scenarios, supporting zero-shot transfer.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============================== EDGE ============================== -->
+<section>
+  <div class="container">
+    <h2>Edge Deployment</h2>
+    <div class="cards no-top">
+      <div class="card"><div class="num">5,295</div><div class="lbl">parameters (20.7 KB)</div></div>
+      <div class="card"><div class="num">0.26 MFLOPs</div><div class="lbl">per inference</div></div>
+      <div class="card"><div class="num">50.8 ms</div><div class="lbl">end-to-end per 25 s window<br>(signal processing 47.7 ms + network 3.1 ms)</div></div>
+      <div class="card"><div class="num">Jetson AGX Orin</div><div class="lbl">CPU only, 30 W mode</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== BIBTEX ============================== -->
+<section class="band">
+  <div class="container narrow">
+    <h2>BibTeX</h2>
+    <pre class="bibtex">@article{hu2026hear,
+  title   = {Learning to Assess Heartbeat Observability for
+             mmWave Heart-Rate Sensing},
+  author  = {Hu, Yuxuan and Shan, Shilin and Yang, Jianfei and Xu, Feng},
+  journal = {Under review},
+  year    = {2026}
+}</pre>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    Page design inspired by the
+    <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>
+    (Nerfies). This page is fully self-contained and works offline.
+    <br>Body poses: the data used in this project was obtained from
+    <a href="http://mocap.cs.cmu.edu/">mocap.cs.cmu.edu</a>; the database was created with funding from NSF EIA-0196217.
+  </div>
+</footer>
+
+<script>
+// wrap every video with a centred play badge (visible while paused)
+document.querySelectorAll('video[controls]').forEach(function (v) {
+  var w = document.createElement('div');
+  w.className = 'vwrap';
+  v.parentNode.insertBefore(w, v);
+  w.appendChild(v);
+  var b = document.createElement('button');
+  b.className = 'play-badge';
+  b.setAttribute('aria-label', 'Play video');
+  b.innerHTML = '<svg viewBox="0 0 16 16"><path d="M3 1.5v13L14 8z"/></svg>';
+  b.addEventListener('click', function () { v.play(); });
+  w.appendChild(b);
+  v.addEventListener('play', function () { w.classList.add('playing'); });
+  v.addEventListener('pause', function () { w.classList.remove('playing'); });
+});
+</script>
+</body>
+</html>
